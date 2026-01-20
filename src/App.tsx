@@ -26,13 +26,17 @@ const App: React.FC = () => {
                 scrollY: 0,
             });
 
-            const image = canvas.toDataURL("image/png");
-            const link = document.createElement('a');
-            link.href = image;
-            link.download = `authentication-report-${data?.number || 'scan'}.png`;
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
+            canvas.toBlob((blob) => {
+                if (!blob) return;
+                const url = URL.createObjectURL(blob);
+                const link = document.createElement('a');
+                link.href = url;
+                link.download = `authentication-report-${data?.number || 'scan'}.png`;
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+                URL.revokeObjectURL(url);
+            }, 'image/png');
         } catch (error) {
             console.error("Screenshot failed:", error);
         }
